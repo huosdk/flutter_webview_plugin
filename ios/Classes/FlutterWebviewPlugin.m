@@ -79,6 +79,8 @@ static NSString *const CHANNEL_NAME = @"flutter_webview_plugin";
         [self onCanGoForward:call result:result];
     } else if ([@"cleanCache" isEqualToString:call.method]) {
         [self cleanCache:result];
+    } else if ([@"updateUserAgent" isEqualToString:call.method]) {
+        [self updateUserAgent:call.arguments];
     } else {
         result(FlutterMethodNotImplemented);
     }
@@ -121,11 +123,11 @@ static NSString *const CHANNEL_NAME = @"flutter_webview_plugin";
         [self cleanCookies:result];
 
     }
-
     if (userAgent != (id)[NSNull null]) {
-        [[NSUserDefaults standardUserDefaults] registerDefaults:@{@"UserAgent": userAgent}];
+        [self updateUserAgent:userAgent];
+        [[NSUserDefaults standardUserDefaults] registerDefaults:@{@"UserAgent": [NSString stringWithFormat:@"%@%@",oldUA,userAgent]}];
     }
-
+    
     CGRect rc;
     if (rect != nil) {
         rc = [self parseRect:rect];
@@ -233,6 +235,20 @@ static NSString *const CHANNEL_NAME = @"flutter_webview_plugin";
     } else {
         completionHandler(nil);
     }
+}
+
+static NSString *oldUA=nil;
+- (void)updateUserAgent:(NSString*)userAgent {
+  if (@available(iOS 9.0, *)) {
+      NSLog(@"userAgent:%@",userAgent);
+    if(oldUA==nil){
+        UIWebView *uiWebView = [[UIWebView alloc] initWithFrame:CGRectZero];
+        oldUA = [uiWebView stringByEvaluatingJavaScriptFromString:@"navigator.userAgent"];
+    }
+    [self.webview setCustomUserAgent:[NSString stringWithFormat:@"%@%@",oldUA,userAgent]];
+  } else {
+    NSLog(@"Updating UserAgent is not supported for Flutter WebViews prior to iOS 9.");
+  }
 }
 
 - (void)resize:(FlutterMethodCall*)call {
@@ -398,7 +414,17 @@ static NSString *const CHANNEL_NAME = @"flutter_webview_plugin";
         id data = @{@"url": navigationAction.request.URL.absoluteString};
         [channel invokeMethod:@"onUrlChanged" arguments:data];
     }
-
+    //添加第三方跳转协议支持 by liuhongliang 20200527 start
+    if(![webView.URL.scheme isEqualToString:@"http"] &&
+                ![webView.URL.scheme isEqualToString:@"https"] &&
+                ![webView.URL.scheme isEqualToString:@"about"] &&
+                ![webView.URL.scheme isEqualToString:@"file"]
+                ){
+        [[UIApplication sharedApplication] openURL:navigationAction.request.URL];
+        decisionHandler(WKNavigationActionPolicyCancel);
+        return;
+    }
+    //添加第三方跳转协议支持 by liuhongliang 20200527 end
     if (_enableAppScheme ||
         ([webView.URL.scheme isEqualToString:@"http"] ||
          [webView.URL.scheme isEqualToString:@"https"] ||

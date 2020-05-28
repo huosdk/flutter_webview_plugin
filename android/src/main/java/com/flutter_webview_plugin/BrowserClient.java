@@ -12,6 +12,14 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import android.widget.Toast;
+import android.text.TextUtils;
+import android.content.ActivityNotFoundException;
+import android.content.Context;
+import android.content.Intent;
+import android.app.Activity;
+import android.net.Uri;
+import android.util.Log;
 
 /**
  * Created by lejard_h on 20/12/2017.
@@ -73,7 +81,22 @@ public class BrowserClient extends WebViewClient {
         data.put("type", isInvalid ? "abortLoad" : "shouldStart");
 
         FlutterWebviewPlugin.channel.invokeMethod("onState", data);
-        return isInvalid;
+        //返回值是true的时候控制去WebView打开，为false调用系统浏览器或第三方浏览器
+        if(url.startsWith("http")||url.startsWith("https")||url.startsWith("ftp")){
+            return false;
+        }else{
+            try{
+                Intent intent = new Intent();
+                intent.setAction(Intent.ACTION_VIEW);
+                intent.setData(Uri.parse(url));
+                intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                view.getContext().startActivity(intent);
+            }catch (ActivityNotFoundException e){
+                Log.e("flutter_webview_plugin","open url fail="+url);
+                Toast.makeText(view.getContext(), "手机还没有安装支持打开此网页的应用！", Toast.LENGTH_SHORT).show();
+            }
+            return true;
+        }
     }
 
     @Override
@@ -86,7 +109,22 @@ public class BrowserClient extends WebViewClient {
         data.put("type", isInvalid ? "abortLoad" : "shouldStart");
 
         FlutterWebviewPlugin.channel.invokeMethod("onState", data);
-        return isInvalid;
+        //返回值是true的时候控制去WebView打开，为false调用系统浏览器或第三方浏览器
+        if(url.startsWith("http")||url.startsWith("https")||url.startsWith("ftp")){
+            return false;
+        }else{
+            try{
+                Intent intent = new Intent();
+                intent.setAction(Intent.ACTION_VIEW);
+                intent.setData(Uri.parse(url));
+                intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                view.getContext().startActivity(intent);
+            }catch (ActivityNotFoundException e){
+                Log.e("flutter_webview_plugin","open url fail="+url);
+                Toast.makeText(view.getContext(), "手机还没有安装支持打开此网页的应用！", Toast.LENGTH_SHORT).show();
+            }
+            return true;
+        }
     }
 
     @TargetApi(Build.VERSION_CODES.LOLLIPOP)

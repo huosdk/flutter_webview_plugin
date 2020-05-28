@@ -167,7 +167,7 @@ public class FlutterWebviewPlugin implements MethodCallHandler, PluginRegistry.A
         result.success(null);
     }
 
-    private FrameLayout.LayoutParams buildLayoutParams(MethodCall call) {
+    private FrameLayout.LayoutParams laubuildLayoutParams(MethodCall call) {
         Map<String, Number> rc = call.argument("rect");
         FrameLayout.LayoutParams params;
         if (rc != null) {

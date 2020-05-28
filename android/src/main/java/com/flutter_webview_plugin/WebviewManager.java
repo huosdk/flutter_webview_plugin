@@ -39,7 +39,7 @@ import io.flutter.plugin.common.MethodCall;
 import io.flutter.plugin.common.MethodChannel;
 
 import static android.app.Activity.RESULT_OK;
-
+import android.text.TextUtils;
 /**
  * Created by lejard_h on 20/12/2017.
  */
@@ -433,7 +433,8 @@ class WebviewManager {
         }
 
         if (userAgent != null) {
-            webView.getSettings().setUserAgentString(userAgent);
+            //webView.getSettings().setUserAgentString(userAgent);
+            updateUserAgent(userAgent);
         }
 
         if (!scrollBar) {
@@ -446,7 +447,14 @@ class WebviewManager {
             webView.loadUrl(url);
         }
     }
+    static String oldUserAgent = null;
 
+    private void updateUserAgent(String userAgent) {
+        if (TextUtils.isEmpty(oldUserAgent)) {
+            oldUserAgent = webView.getSettings().getUserAgentString();
+        }
+        webView.getSettings().setUserAgentString(oldUserAgent + userAgent);
+    }
     void reloadUrl(String url) {
         webView.loadUrl(url);
     }
