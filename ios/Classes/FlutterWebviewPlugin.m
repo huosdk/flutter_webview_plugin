@@ -239,16 +239,16 @@ static NSString *const CHANNEL_NAME = @"flutter_webview_plugin";
 
 static NSString *oldUA=nil;
 - (void)updateUserAgent:(NSString*)userAgent {
-  if (@available(iOS 9.0, *)) {
-      NSLog(@"userAgent:%@",userAgent);
-    if(oldUA==nil){
-        UIWebView *uiWebView = [[UIWebView alloc] initWithFrame:CGRectZero];
-        oldUA = [uiWebView stringByEvaluatingJavaScriptFromString:@"navigator.userAgent"];
-    }
-    [self.webview setCustomUserAgent:[NSString stringWithFormat:@"%@%@",oldUA,userAgent]];
-  } else {
-    NSLog(@"Updating UserAgent is not supported for Flutter WebViews prior to iOS 9.");
-  }
+//   if (@available(iOS 9.0, *)) {
+//       NSLog(@"userAgent:%@",userAgent);
+//     if(oldUA==nil){
+//         UIWebView *uiWebView = [[UIWebView alloc] initWithFrame:CGRectZero];
+//         oldUA = [uiWebView stringByEvaluatingJavaScriptFromString:@"navigator.userAgent"];
+//     }
+//     [self.webview setCustomUserAgent:[NSString stringWithFormat:@"%@%@",oldUA,userAgent]];
+//   } else {
+//     NSLog(@"Updating UserAgent is not supported for Flutter WebViews prior to iOS 9.");
+//   }
 }
 
 - (void)resize:(FlutterMethodCall*)call {
