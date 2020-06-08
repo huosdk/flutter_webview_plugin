@@ -255,7 +255,7 @@ static NSString *oldUA=nil;
 //   }
 }
 
-- (NSString*)getMainBundleDirectory:(void (^_Nullable)(NSString * response))completionHandler {
+- (void)getMainBundleDirectory:(void (^_Nullable)(NSString * response))completionHandler {
   NSBundle *mainBundle = [NSBundle mainBundle];
   completionHandler([mainBundle bundlePath]);
 }
