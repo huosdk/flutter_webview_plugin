@@ -231,6 +231,12 @@ class FlutterWebviewPlugin {
     return res;
   }
 
+  /// getMainBundleDirectory
+  Future<String> getMainBundleDirectory() async {
+    final dir = await _channel.invokeMethod('getMainBundleDirectory');
+    return dir;
+  }
+
   /// Close the Webview
   /// Will trigger the [onDestroy] event
   Future<Null> close() async {

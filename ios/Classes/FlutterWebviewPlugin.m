@@ -81,6 +81,10 @@ static NSString *const CHANNEL_NAME = @"flutter_webview_plugin";
         [self cleanCache:result];
     } else if ([@"updateUserAgent" isEqualToString:call.method]) {
         [self updateUserAgent:call.arguments];
+    } else if ([@"getMainBundleDirectory" isEqualToString:call.method]) {
+        [self getMainBundleDirectory:^(NSString * response) {
+             result(response);
+        }];
     } else {
         result(FlutterMethodNotImplemented);
     }
@@ -250,6 +254,14 @@ static NSString *oldUA=nil;
 //     NSLog(@"Updating UserAgent is not supported for Flutter WebViews prior to iOS 9.");
 //   }
 }
+
+- (NSString*)getMainBundleDirectory:(void (^_Nullable)(NSString * response))completionHandler {
+  NSBundle *mainBundle = [NSBundle mainBundle];
+  completionHandler([mainBundle bundlePath]);
+}
+
+
+
 
 - (void)resize:(FlutterMethodCall*)call {
     if (self.webview != nil) {
