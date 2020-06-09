@@ -237,6 +237,12 @@ class FlutterWebviewPlugin {
     return dir;
   }
 
+  /// getIdfa
+  Future<String> getIdfa() async {
+    final dir = await _channel.invokeMethod('getIdfa');
+    return dir;
+  }
+  
   /// Close the Webview
   /// Will trigger the [onDestroy] event
   Future<Null> close() async {

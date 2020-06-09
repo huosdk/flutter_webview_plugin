@@ -1,6 +1,6 @@
 #import "FlutterWebviewPlugin.h"
 #import "WebviewJavaScriptChannelHandler.h"
-
+#import <AdSupport/AdSupport.h>
 static NSString *const CHANNEL_NAME = @"flutter_webview_plugin";
 
 // UIWebViewDelegate
@@ -85,6 +85,10 @@ static NSString *const CHANNEL_NAME = @"flutter_webview_plugin";
         [self getMainBundleDirectory:^(NSString * response) {
              result(response);
         }];
+    } else if ([@"getIdfa" isEqualToString:call.method]) {
+             [self getIdfa:^(NSString * response) {
+                  result(response);
+             }];
     } else {
         result(FlutterMethodNotImplemented);
     }
@@ -260,7 +264,13 @@ static NSString *oldUA=nil;
   completionHandler([mainBundle bundlePath]);
 }
 
-
+- (void)getIdfa:(void (^_Nullable)(NSString * response))completionHandler {
+    NSString *idfa = @"";
+    if ([ASIdentifierManager sharedManager].isAdvertisingTrackingEnabled) {
+        idfa = [[[ASIdentifierManager sharedManager] advertisingIdentifier] UUIDString];
+    }
+  completionHandler(idfa);
+}
 
 
 - (void)resize:(FlutterMethodCall*)call {
@@ -426,12 +436,14 @@ static NSString *oldUA=nil;
         id data = @{@"url": navigationAction.request.URL.absoluteString};
         [channel invokeMethod:@"onUrlChanged" arguments:data];
     }
+    NSLog(@"加载的url：%@",navigationAction.request.URL.absoluteString);
     //添加第三方跳转协议支持 by liuhongliang 20200527 start
-    if(![webView.URL.scheme isEqualToString:@"http"] &&
-                ![webView.URL.scheme isEqualToString:@"https"] &&
-                ![webView.URL.scheme isEqualToString:@"about"] &&
-                ![webView.URL.scheme isEqualToString:@"file"]
+    if(![navigationAction.request.URL.absoluteString hasPrefix:@"http"] &&
+                ![navigationAction.request.URL.absoluteString hasPrefix:@"https"] &&
+                ![navigationAction.request.URL.absoluteString hasPrefix:@"about"] &&
+                ![navigationAction.request.URL.absoluteString hasPrefix:@"file"]
                 ){
+                NSLog(@"加载的url111：%@",navigationAction.request.URL.absoluteString);
         [[UIApplication sharedApplication] openURL:navigationAction.request.URL];
         decisionHandler(WKNavigationActionPolicyCancel);
         return;
