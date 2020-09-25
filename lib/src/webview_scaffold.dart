@@ -144,6 +144,7 @@ class _WebviewScaffoldState extends State<WebviewScaffold> {
 
   @override
   Widget build(BuildContext context) {
+    double ratio = MediaQuery.of(context).size.width / 360;
     return Scaffold(
       appBar: widget.appBar,
       resizeToAvoidBottomInset: widget.resizeToAvoidBottomInset,
@@ -152,7 +153,7 @@ class _WebviewScaffoldState extends State<WebviewScaffold> {
       body: _WebviewPlaceholder(
         onRectChanged: (Rect value) {
           if (_rect == null) {
-            _rect = value;
+            _rect = Rect.fromLTWH(value.left * ratio, value.top * ratio, value.width * ratio, value.height * ratio);
             webviewReference.launch(
               widget.url,
               headers: widget.headers,
@@ -183,7 +184,7 @@ class _WebviewScaffoldState extends State<WebviewScaffold> {
             );
           } else {
             if (_rect != value) {
-              _rect = value;
+              _rect = Rect.fromLTWH(value.left * ratio, value.top * ratio, value.width * ratio, value.height * ratio);
               _resizeTimer?.cancel();
               _resizeTimer = Timer(const Duration(milliseconds: 250), () {
                 // avoid resizing to fast when build is called multiple time
